@@ -159,16 +159,39 @@ class MvcHelper {
     // Move these into an AdminHelper
     
     public function admin_header_cells($controller) {
+        
+        $sortable_fields = isset($controller->default_sortable_fields) ? $controller->default_sortable_fields : array();
+        
         $html = '';
         foreach ($controller->default_columns as $key => $column) {
-            $html .= $this->admin_header_cell($column['label']);
+            $sortable_key = in_array($column['key'], $sortable_fields) ? $column['key'] : false;
+            $html .= $this->admin_header_cell($column['label'], $sortable_key);
         }
         $html .= $this->admin_header_cell('');
         return '<tr>'.$html.'</tr>';
         
     }
     
-    public function admin_header_cell($label) {
+    public function admin_header_cell($label, $sortable_key = false) {
+        
+        if($sortable_key) {
+            
+            //current page
+            $args = array();
+            $args[] = 'page='.$_GET['page'];
+            
+            //order
+            $curr_order = isset($_GET['order']) ? $_GET['order'] : '';
+            $order = $curr_order == $sortable_key ? $sortable_key." desc" : $sortable_key;
+            $args[] = 'order='.$order;
+            
+            //ceep search var
+            if(isset($_GET['q'])){
+                $args[] = 'q='.$_GET['q'];
+            }
+
+            $label = '<a href="?'. ( implode('&', $args) ).'">'.$label.'</a>';
+        }
         return '<th scope="col" class="manage-column">'.$label.'</th>';
     }
     
