@@ -158,11 +158,29 @@ class MvcHelper {
     
     // Move these into an AdminHelper
     
-    public function admin_header_cells($controller) {
+    public function admin_header_cells($controller, $options = array()) {
+        
+        $default = array(
+            'selectable' => false,
+            'footer' => false
+        );
+        
+        $options = array_merge($default, $options);
         
         $sortable_fields = isset($controller->default_sortable_fields) ? $controller->default_sortable_fields : array();
         
         $html = '';
+        
+        if($options['selectable']){
+            if($options['footer']){
+                $html .= '<td id="cb" class="manage-column column-cb check-column" scope="col"><label class="screen-reader-text" for="cb-select-all-1">Alle auswählen</label><input id="cb-select-all-1" type="checkbox"></td>';//$this->admin_header_cell('');
+            }
+            else {
+                $html .= '<td class="manage-column column-cb check-column" scope="col"><label class="screen-reader-text" for="cb-select-all-footer">Alle auswählen</label><input id="cb-select-all-footer" type="checkbox"></td>';//$this->admin_header_cell('');
+            }
+                
+        }
+        
         foreach ($controller->default_columns as $key => $column) {
             $sortable_key = in_array($column['key'], $sortable_fields) ? $column['key'] : false;
             $html .= $this->admin_header_cell($column['label'], $sortable_key);
@@ -199,6 +217,11 @@ class MvcHelper {
         $html = '';
         foreach ($objects as $object) {
             $html .= '<tr>';
+            
+            if($options['selectable']){
+                $html .= '<th class="check-column" scope="row"><input type="checkbox" name="object[]" value="'.$object->id.'" /></th>';
+            }
+            
             foreach ($controller->default_columns as $key => $column) {
                 $html .= $this->admin_table_cell($controller, $object, $column, $options);
             }
