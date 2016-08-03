@@ -218,7 +218,7 @@ class MvcHelper {
         foreach ($objects as $object) {
             $html .= '<tr>';
             
-            if($options['selectable']){
+            if(isset($options['selectable']) && $options['selectable']){
                 $html .= '<th class="check-column" scope="row"><input type="checkbox" name="object[]" value="'.$object->id.'" /></th>';
             }
             
